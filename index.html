@@ -1,30 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>主播经纪系统</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .form {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 8px;
+      margin: 5px;
+    }
+
+    button {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .card {
+      background: white;
+      width: 220px;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      background: #ff4d6d;
+      color: white;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: green;
+    }
+
+    .delete {
+      margin-top: 10px;
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>主播资料系统</h1>
+
+<div class="form">
+  <input id="name" placeholder="主播名字">
+  <input id="type" placeholder="风格（甜美/御姐等）">
+  <button onclick="addHost()">添加主播</button>
+</div>
+
+<div class="container" id="container"></div>
+
 <script>
 let hosts = JSON.parse(localStorage.getItem("hosts")) || [];
 
-function renderHosts() {
-  const container = document.querySelector(".container");
+function render() {
+  const container = document.getElementById("container");
+  container.innerHTML = "";
 
-  container.innerHTML = `
-    <div class="card">
-      <div class="name">Luna</div>
-      <div class="tag">甜美系</div>
-      <div class="status">状态：招募中</div>
-    </div>
-
-    <div class="card">
-      <div class="name">Miko</div>
-      <div class="tag">御姐系</div>
-      <div class="status">状态：已签约</div>
-    </div>
-
-    <div class="card">
-      <div class="name">Aya</div>
-      <div class="tag">可爱系</div>
-      <div class="status">状态：面试中</div>
-    </div>
-  `;
-
-  hosts.forEach(host => {
+  hosts.forEach((host, index) => {
     const card = document.createElement("div");
     card.className = "card";
 
@@ -32,6 +105,7 @@ function renderHosts() {
       <div class="name">${host.name}</div>
       <div class="tag">${host.type}</div>
       <div class="status">状态：招募中</div>
+      <button class="delete" onclick="deleteHost(${index})">删除</button>
     `;
 
     container.appendChild(card);
@@ -47,18 +121,24 @@ function addHost() {
     return;
   }
 
-  hosts.push({
-    name: name,
-    type: type
-  });
+  hosts.push({ name, type });
 
   localStorage.setItem("hosts", JSON.stringify(hosts));
 
   document.getElementById("name").value = "";
   document.getElementById("type").value = "";
 
-  renderHosts();
+  render();
 }
 
-renderHosts();
+function deleteHost(index) {
+  hosts.splice(index, 1);
+  localStorage.setItem("hosts", JSON.stringify(hosts));
+  render();
+}
+
+render();
 </script>
+
+</body>
+</html>

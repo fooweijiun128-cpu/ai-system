@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>主播经纪系统</title>
+
   <style>
     body {
       font-family: Arial;
@@ -23,7 +24,7 @@
 
     .card {
       background: white;
-      width: 250px;
+      width: 220px;
       padding: 15px;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -49,12 +50,36 @@
       font-size: 13px;
       color: green;
     }
+
+    .form {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 8px;
+      margin: 5px;
+    }
+
+    button {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
   </style>
 </head>
+
 <body>
 
 <h1>主播资料系统</h1>
 
+<!-- 新增主播表单 -->
+<div class="form">
+  <input id="name" placeholder="主播名字">
+  <input id="type" placeholder="风格（甜美/御姐等）">
+  <button onclick="addHost()">添加主播</button>
+</div>
+
+<!-- 卡片区域 -->
 <div class="container">
 
   <div class="card">
@@ -76,6 +101,34 @@
   </div>
 
 </div>
+
+<script>
+function addHost() {
+  const name = document.getElementById("name").value;
+  const type = document.getElementById("type").value;
+
+  if (!name || !type) {
+    alert("请填写完整信息");
+    return;
+  }
+
+  const container = document.querySelector(".container");
+
+  const card = document.createElement("div");
+  card.className = "card";
+
+  card.innerHTML = `
+    <div class="name">${name}</div>
+    <div class="tag">${type}</div>
+    <div class="status">状态：招募中</div>
+  `;
+
+  container.appendChild(card);
+
+  document.getElementById("name").value = "";
+  document.getElementById("type").value = "";
+}
+</script>
 
 </body>
 </html>

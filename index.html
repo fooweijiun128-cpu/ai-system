@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>主播经纪系统</title>
+  <title>主播经纪系统 (Firebase版)</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <style>
     body {
@@ -80,7 +83,7 @@
 
 <body>
 
-<h1>主播资料系统</h1>
+<h1>主播资料系统 (云端版)</h1>
 
 <div class="form">
   <input id="name" placeholder="主播名字">
@@ -91,27 +94,54 @@
 <div class="container" id="container"></div>
 
 <script>
-let hosts = JSON.parse(localStorage.getItem("hosts")) || [];
+// 🔥 1. Firebase 配置（⚠️ 换成你自己的）
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-function render() {
-  const container = document.getElementById("container");
-  container.innerHTML = "";
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB8Cp9WatJsFFwwNU9MfoyiGrUyZQD4FU8",
+  authDomain: "ai-system-2307c.firebaseapp.com",
+  projectId: "ai-system-2307c",
+  storageBucket: "ai-system-2307c.firebasestorage.app",
+  messagingSenderId: "778037525873",
+  appId: "1:778037525873:web:10e9c5b247de5f2a234ad0"
+};
 
-  hosts.forEach((host, index) => {
-    const card = document.createElement("div");
-    card.className = "card";
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-    card.innerHTML = `
-      <div class="name">${host.name}</div>
-      <div class="tag">${host.type}</div>
-      <div class="status">状态：招募中</div>
-      <button class="delete" onclick="deleteHost(${index})">删除</button>
-    `;
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const hostsRef = db.collection("hosts");
 
-    container.appendChild(card);
+// 🔥 2. 读取数据（实时同步）
+function loadHosts() {
+  hostsRef.onSnapshot(snapshot => {
+    const container = document.getElementById("container");
+    container.innerHTML = "";
+
+    snapshot.forEach(doc => {
+      const host = doc.data();
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <div class="name">${host.name}</div>
+        <div class="tag">${host.type}</div>
+        <div class="status">状态：招募中</div>
+        <button class="delete" onclick="deleteHost('${doc.id}')">删除</button>
+      `;
+
+      container.appendChild(card);
+    });
   });
 }
 
+// 🔥 3. 添加主播（云端）
 function addHost() {
   const name = document.getElementById("name").value;
   const type = document.getElementById("type").value;
@@ -121,23 +151,23 @@ function addHost() {
     return;
   }
 
-  hosts.push({ name, type });
-
-  localStorage.setItem("hosts", JSON.stringify(hosts));
+  hostsRef.add({
+    name: name,
+    type: type,
+    time: Date.now()
+  });
 
   document.getElementById("name").value = "";
   document.getElementById("type").value = "";
-
-  render();
 }
 
-function deleteHost(index) {
-  hosts.splice(index, 1);
-  localStorage.setItem("hosts", JSON.stringify(hosts));
-  render();
+// 🔥 4. 删除主播（云端）
+function deleteHost(id) {
+  hostsRef.doc(id).delete();
 }
 
-render();
+// 启动加载
+loadHosts();
 </script>
 
 </body>
